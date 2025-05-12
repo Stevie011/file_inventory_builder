@@ -1,4 +1,4 @@
-name: Build EXE (Test)
+name: Build EXE and Upload
 
 on: [push]
 
@@ -20,5 +20,10 @@ jobs:
         run: pyinstaller file_inventory.spec
 
       - name: Show output files
-        run: Get-ChildItem -Recurse -Force
+        run: Get-ChildItem -Recurse -File | Select-Object -ExpandProperty FullName
 
+      - name: Upload EXE Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: file_inventory-exe
+          path: dist/file_inventory/file_inventory.exe
