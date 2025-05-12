@@ -29,7 +29,7 @@ jobs:
       - name: List files in the dist/ directory
         run: |
           echo "Listing files in dist/ directory"
-          dir /s /b D:\a\file_inventory_builder\file_inventory_builder\dist
+          Get-ChildItem -Recurse -Path D:\a\file_inventory_builder\file_inventory_builder\dist
 
       - name: Create GitHub Release (with EXE)
         id: create_release
