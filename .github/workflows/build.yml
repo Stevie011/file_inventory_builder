@@ -1,12 +1,16 @@
-name: Build EXE and Upload
+name: Build EXE and Upload via GitHub Release
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -19,11 +23,11 @@ jobs:
       - name: Build with PyInstaller
         run: pyinstaller file_inventory.spec
 
-      - name: Show output files
-        run: Get-ChildItem -Recurse -File | Select-Object -ExpandProperty FullName
+      - name: Create GitHub Release
+        id: create_release
+        run: |
+          VERSION=$(date +'%Y%m%d%H%M%S')
+          gh release create $VERSION dist/file_inventory/file_inventory.exe --title "Release $VERSION" --notes "Auto-generated release for file_inventory.exe"
 
-      - name: Upload EXE Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: file_inventory-exe
-          path: dist/file_inventory/file_inventory.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
