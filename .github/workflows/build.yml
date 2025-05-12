@@ -11,42 +11,32 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Install PyInstaller
-        run: pip install pyinstaller
-
-      - name: Build with PyInstaller
+      - name: Install PyInstaller and dependencies
         run: |
-          echo "Running PyInstaller..."
-          pyinstaller file_inventory.spec
-          echo "PyInstaller build complete."
+          pip install pyinstaller pandas numpy openpyxl xlsxwriter et_xmlfile
 
-      - name: List dist folder contents
+      - name: Build EXE with PyInstaller
+        run: pyinstaller file_inventory.spec
+
+      - name: List contents of dist
         run: |
-          echo "Listing files in dist/ directory:"
+          echo "Dist folder contents:"
           Get-ChildItem -Recurse -Path dist
 
       - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: v1.0.${{ github.run_number }}
-          release_name: Release v1.0.${{ github.run_number }}
+          name: Release v1.0.${{ github.run_number }}
           draft: false
           prerelease: false
+          files: dist/file_inventory.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/file_inventory.exe
-          asset_name: file_inventory.exe
-          asset_content_type: application/octet-stream
