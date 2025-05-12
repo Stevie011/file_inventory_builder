@@ -21,7 +21,11 @@ jobs:
         run: pip install pyinstaller
 
       - name: Build with PyInstaller
-        run: pyinstaller file_inventory.spec
+        run: |
+          echo "Running PyInstaller..."
+          pyinstaller file_inventory.spec
+          echo "PyInstaller build complete. Checking output folder..."
+          dir dist
 
       - name: List files in dist/ directory
         run: |
