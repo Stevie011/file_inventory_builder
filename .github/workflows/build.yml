@@ -25,17 +25,18 @@ jobs:
           echo "Running PyInstaller..."
           pyinstaller file_inventory.spec
           echo "PyInstaller build complete. Checking output folder..."
-          dir dist
+          dir /s /b
 
-      - name: List files in dist/ directory
+      - name: List files in the build folder
         run: |
-          echo "Listing files in dist/ directory"
-          Get-ChildItem -Recurse -Force dist/
+          echo "Listing files after PyInstaller build..."
+          dir /s /b
 
-      - name: Create GitHub Release
+      - name: Create GitHub Release (with EXE)
         id: create_release
         run: |
+          echo "Attempting to upload EXE to GitHub Releases..."
           $VERSION = (Get-Date -Format "yyyyMMddHHmmss")
-          gh release create $VERSION dist/file_inventory/file_inventory.exe --title "Release $VERSION" --notes "Auto-generated release for file_inventory.exe"
+          gh release create $VERSION dist\file_inventory\file_inventory.exe --title "Release $VERSION" --notes "Auto-generated release for file_inventory.exe"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
