@@ -23,7 +23,7 @@ jobs:
         run: Get-ChildItem -Recurse -File | Select-Object -ExpandProperty FullName
 
       - name: Upload EXE Artifact
-        uses: actions/upload-artifact@v3@2c76b1e5e5c4d94a1276f48dbee0e8d56e1b0652
+        uses: actions/upload-artifact@v2
         with:
           name: file_inventory-exe
           path: dist/file_inventory/file_inventory.exe
