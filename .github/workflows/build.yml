@@ -8,8 +8,9 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Set up Python
@@ -24,18 +25,28 @@ jobs:
         run: |
           echo "Running PyInstaller..."
           pyinstaller file_inventory.spec
-          echo "PyInstaller build complete. Checking output folder..."
+          echo "PyInstaller build complete."
 
-      - name: List files in the dist/ directory
+      - name: List dist folder contents
         run: |
-          echo "Listing files in dist/ directory"
-          Get-ChildItem -Recurse -Path D:\a\file_inventory_builder\file_inventory_builder\dist
+          echo "Listing files in dist/ directory:"
+          Get-ChildItem -Recurse -Path dist
 
-      - name: Create GitHub Release (with EXE)
+      - name: Create GitHub Release
         id: create_release
-        run: |
-          echo "Attempting to upload EXE to GitHub Releases..."
-          $VERSION = (Get-Date -Format "yyyyMMddHHmmss")
-          gh release create $VERSION D:\a\file_inventory_builder\file_inventory_builder\dist\file_inventory.exe --title "Release $VERSION" --notes "Auto-generated release for file_inventory.exe"
+        uses: actions/create-release@v1
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          release_name: Release v1.0.${{ github.run_number }}
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/file_inventory.exe
+          asset_name: file_inventory.exe
+          asset_content_type: application/octet-stream
