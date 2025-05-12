@@ -23,6 +23,11 @@ jobs:
       - name: Build with PyInstaller
         run: pyinstaller file_inventory.spec
 
+      - name: List files in dist/ directory
+        run: |
+          echo "Listing files in dist/ directory"
+          Get-ChildItem -Recurse -Force dist/
+
       - name: Create GitHub Release
         id: create_release
         run: |
